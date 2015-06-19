@@ -53,7 +53,7 @@ Obtained access token will be saved for you in _SESSION variable.
 $humanity->obtainAccessToken();
 // Get access token instance
 $accessToken = $humanity->getAccessToken();
-sprintf('Access token: %s', $accessToken->accessToken);
+printf('Access token: %s', $accessToken->accessToken);
 ```
 
 Retrive logged employee data
@@ -63,7 +63,7 @@ Invoking Humanity::me() will return Employee entity instance
 
 ```php
 $me = $humanity->me();
-sprintf('Hello, %s', $me->display_name);
+printf('Hello, %s', $me->display_name);
 ```
 
 Working with entities
