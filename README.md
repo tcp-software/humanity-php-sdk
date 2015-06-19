@@ -72,6 +72,12 @@ Working with entities
 Retrieve data
 
 ```php
+// Get Company repository instance
+$companyRepository = $humanity->getCompanyRepository();
+// Retrieve company data for current logged employee
+$company = $companyRepository->get($me->company_id);
+printf('Company: %s<br/>', $company->name);
+
 // Get Employee repository instance
 $employeeRepository = $humanity->getEmployeeRepository();
 // Retrieve employees data for company.
