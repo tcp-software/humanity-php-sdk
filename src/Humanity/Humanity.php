@@ -7,6 +7,7 @@ use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Message\RequestInterface;
 use Humanity\Entity\Employee as EmployeeEntity;
 use Humanity\OAuth2\Client\Provider\Humanity as Provider;
+use Humanity\Repository\Account as AccountRepository;
 use Humanity\Repository\Company as CompanyRepository;
 use Humanity\Repository\Employee as EmployeeRepository;
 use Humanity\Repository\Location as LocationRepository;
@@ -404,14 +405,25 @@ class Humanity {
 	}
 
 	/**
-	 * @return TimeclockRepository
-	 */
+ * @return TimeclockRepository
+ */
 	public function getTimeclockRepository() {
 		if (!isset($this->repositories['timeclock'])) {
 			$this->repositories['timeclock'] = new TimeclockRepository($this);
 		}
 
 		return $this->repositories['timeclock'];
+	}
+
+	/**
+	 * @return AccountRepository
+	 */
+	public function getAccountRepository() {
+		if (!isset($this->repositories['account'])) {
+			$this->repositories['account'] = new AccountRepository($this);
+		}
+
+		return $this->repositories['account'];
 	}
 
 	/**

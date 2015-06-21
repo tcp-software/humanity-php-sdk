@@ -32,7 +32,9 @@ class Shift extends AbstractRepository {
 	 * Get Shifts related to Entity identified by unique_id parameter.
 	 * @scopes shift.view
 	 *
-	 * @param string $id Company id
+	 * @param string    $id Company id
+	 * @param \DateTime $from
+	 * @param \DateTime $to
 	 *
 	 * @return ShiftEntity[]|array
 	 */

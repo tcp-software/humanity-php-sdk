@@ -70,6 +70,31 @@ class Employee extends AbstractRepository {
 	}
 
 	/**
+	 * Get all employees from account.
+	 * @scopes account.view employee.view
+	 *
+	 * @param string $id Account id
+	 *
+	 * @return EmployeeEntity[]|array
+	 */
+	public function getByAccount($id) {
+		$response = $this->getHumanity()->get('accounts/:id/employees', (string) $id);
+
+		if ($response->hasError()) {
+			$this->setError($response);
+			return [];
+		}
+
+		$collection = [];
+
+		foreach ($response as $data) {
+			$collection[] = new EmployeeEntity($data);
+		}
+
+		return $collection;
+	}
+
+	/**
 	 * Add new Employee to Company.
 	 * @scopes employee.manage
 	 *

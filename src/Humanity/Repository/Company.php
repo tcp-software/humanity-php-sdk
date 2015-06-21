@@ -29,6 +29,31 @@ class Company extends AbstractRepository {
 	}
 
 	/**
+	 * Get all companies from account.
+	 * @scopes account.view employee.view
+	 *
+	 * @param string $id Account id
+	 *
+	 * @return CompanyEntity[]|array
+	 */
+	public function getByAccount($id) {
+		$response = $this->getHumanity()->get('accounts/:id/companies', (string) $id);
+
+		if ($response->hasError()) {
+			$this->setError($response);
+			return [];
+		}
+
+		$collection = [];
+
+		foreach ($response as $data) {
+			$collection[] = new CompanyEntity($data);
+		}
+
+		return $collection;
+	}
+
+	/**
 	 * Edit company.
 	 * @scopes CompanyEntity::SCOPE_MANAGE
 	 *
