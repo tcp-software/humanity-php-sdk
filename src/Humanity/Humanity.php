@@ -122,6 +122,14 @@ class Humanity {
 	 * @return AccessToken
 	 */
 	public function getAccessToken() {
+		if (null === $this->accessToken) {
+			$tokenStorage = $this->getStorage();
+
+			if ($tokenStorage->has('humanity-access_token')) {
+				$this->setAccessToken(unserialize($tokenStorage->get('humanity-access_token')));
+			}
+		}
+
 		return $this->accessToken;
 	}
 
