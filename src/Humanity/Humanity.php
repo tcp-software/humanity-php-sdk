@@ -36,7 +36,7 @@ class Humanity {
 	protected $provider;
 
 	/**
-	 * @var Storage
+	 * @var AdapterInterface
 	 */
 	protected $storage;
 
@@ -67,8 +67,8 @@ class Humanity {
 			}
 		}
 
-		if (isset($options['tokenStorage']) && $options['tokenStorage'] instanceof AdapterInterface) {
-			$this->setStorage($options['tokenStorage']);
+		if (isset($options['storage']) && $options['storage'] instanceof AdapterInterface) {
+			$this->setStorage($options['storage']);
 		} else {
 			$this->setStorage(new Storage());
 		}
@@ -105,16 +105,16 @@ class Humanity {
 	}
 
 	/**
-	 * @return Storage
+	 * @return AdapterInterface
 	 */
 	public function getStorage() {
 		return $this->storage;
 	}
 
 	/**
-	 * @param Storage $storage
+	 * @param AdapterInterface $storage
 	 */
-	public function setStorage(Storage $storage) {
+	public function setStorage(AdapterInterface $storage) {
 		$this->storage = $storage;
 	}
 
@@ -149,7 +149,11 @@ class Humanity {
 	 */
 	public function obtainAccessToken() {
 		$tokenStorage = $this->getStorage();
-
+		
+		if ($this->getAccessToken()) {
+			return $this->getAccessToken();
+		}
+		
 		if ($tokenStorage->has('humanity-access_token')) {
 			$this->setAccessToken(unserialize($tokenStorage->get('humanity-access_token')));
 			return $this->getAccessToken();
