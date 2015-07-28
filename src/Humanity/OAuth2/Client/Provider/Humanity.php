@@ -13,7 +13,9 @@ class Humanity extends AbstractProvider {
 	 * @var string
 	 */
 	public $oauthBaseUri = 'https://accounts.humanity.com';
-
+		
+	public $companyId;
+	
 	/**
 	 * @param array $options
 	 */
@@ -52,7 +54,7 @@ class Humanity extends AbstractProvider {
 	public function getAuthorizationUrl($options = []) {
 		return parent::getAuthorizationUrl([
 			'state' => $this->getState()
-		]) . '&company_id=';
+		]) . '&company_id=' . $this->companyId;
 	}
 
 	public function urlAuthorize() {
