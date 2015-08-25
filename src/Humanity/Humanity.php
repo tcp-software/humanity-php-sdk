@@ -72,7 +72,11 @@ class Humanity {
 		} else {
 			$this->setStorage(new Storage());
 		}
-
+		
+		if (!empty($options['apiBaseUri']) && is_string($options['apiBaseUri'])) {
+			$this->setApiBaseUri($options['apiBaseUri']);
+		}
+		
 		$this->client = new Client($this->getApiBaseUri());
 	}
 
