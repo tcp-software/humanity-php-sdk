@@ -33,5 +33,13 @@ interface AdapterInterface {
 	 * @return bool
 	 */
 	public function has($index);
-
+	
+	/**
+	 * Remove index
+	 *
+	 * @param $index
+	 *
+	 * @return bool
+	 */
+	public function remove($index);
 }
