@@ -146,15 +146,17 @@ class Humanity {
 
 	/**
 	 * Obtain an access token.
-	 *
+	 * 
+	 * @param bool $fresh
+	 * 
 	 * @return AccessToken
 	 * @throws \Exception
 	 * @throws IDPException
 	 */
-	public function obtainAccessToken() {
+	public function obtainAccessToken($fresh=false) {
 		$tokenStorage = $this->getStorage();
 		
-		if ($this->getAccessToken()) {
+		if (!$fresh && $this->getAccessToken()) {
 			return $this->getAccessToken();
 		}
 		
