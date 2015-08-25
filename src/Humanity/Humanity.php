@@ -145,18 +145,26 @@ class Humanity {
 	}
 
 	/**
+	 *
+	 */
+	public function clearAccessToken() {
+		$this->accessToken = null;
+
+		$storage = $this->getStorage();
+		$storage->remove('humanity-access_token');
+	}
+
+	/**
 	 * Obtain an access token.
-	 * 
-	 * @param bool $fresh
 	 * 
 	 * @return AccessToken
 	 * @throws \Exception
 	 * @throws IDPException
 	 */
-	public function obtainAccessToken($fresh=false) {
+	public function obtainAccessToken() {
 		$tokenStorage = $this->getStorage();
 		
-		if (!$fresh && $this->getAccessToken()) {
+		if ($this->getAccessToken()) {
 			return $this->getAccessToken();
 		}
 		
@@ -181,7 +189,9 @@ class Humanity {
 		if (!$code || $state != $persistedState) {
 			$error = filter_input(INPUT_GET, 'error') ?: 'error' ;
 			$errorDescription = filter_input(INPUT_GET, 'error_description') ?: 'An unknown error happened';
-
+			
+			$tokenStorage->remove('humanity-oauth2_state');
+			
 			throw new \Exception(sprintf('%s: %s', $error, $errorDescription));
 		}
 
@@ -190,8 +200,10 @@ class Humanity {
 		]);
 
 		$this->setAccessToken($accessToken);
+		
 		$tokenStorage->set('humanity-access_token', serialize($accessToken));
-
+		$tokenStorage->remove('humanity-oauth2_state');
+		
 		return $accessToken;
 	}
 
