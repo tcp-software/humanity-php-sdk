@@ -52,5 +52,16 @@ class Session implements AdapterInterface {
 	public function has($index) {
 		return isset($_SESSION[$index]);
 	}
+	
+	/**
+	 * Remove index
+	 *
+	 * @param $index
+	 *
+	 * @return bool
+	 */
+	public function remove($index) {
+		unset($_SESSION[$index]);
+	}
 
 }
