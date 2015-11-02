@@ -28,7 +28,7 @@ class Humanity {
 	 * Humanity api uri.
 	 * @var string
 	 */
-	protected $apiBaseUri = 'https://publicapi.humanity.com/v1';
+	protected $apiBaseUri = 'https://api.humanity.com/v1';
 
 	/**
 	 * @var Provider
