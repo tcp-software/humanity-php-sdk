@@ -16,6 +16,7 @@ class Company extends AbstractEntity {
 	];
 
 	public $company_id;
+	public $master;
 	public $name;
 	public $description;
 	public $domain;
