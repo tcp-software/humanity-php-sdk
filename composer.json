@@ -18,9 +18,9 @@
 		"humanity"
 	],
 	"require": {
-		"php": "^7.0 || ^8.0",
+		"php": "^7.2.5 || ^8.0",
 		"league/oauth2-client": "^2.6",
-		"guzzlehttp/guzzle": "^7.3",
+		"guzzlehttp/guzzle": "^7.2",
 		"ext-json": "*"
 	}
 	,
