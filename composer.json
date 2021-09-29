@@ -1,5 +1,5 @@
 {
-	"name": "shiftplanning/humanity-php-sdk",
+	"name": "pistej/humanity-php-sdk",
 	"description": "Humanity PHP SDK",
 	"license": "MIT",
 	"authors": [
@@ -18,9 +18,14 @@
 		"humanity"
 	],
 	"require": {
-		"php": ">=5.4.0",
-		"league/oauth2-client": "~0.11.0",
-		"guzzle/guzzle": "~3.7"
+		"php": ">=7.2",
+		"league/oauth2-client": "~2.6.0",
+		"guzzlehttp/guzzle": "~7.3.0",
+		"ext-json": "*"
+	}
+	,
+	"require-dev": {
+		"roave/security-advisories": "dev-latest"
 	},
 	"autoload": {
 		"psr-0": {
