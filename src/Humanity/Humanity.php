@@ -2,9 +2,8 @@
 
 namespace Humanity;
 
-use Guzzle\Http\Client;
-use Guzzle\Http\Exception\BadResponseException;
-use Guzzle\Http\Message\RequestInterface;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Humanity\Entity\Employee as EmployeeEntity;
 use Humanity\OAuth2\Client\Provider\Humanity as Provider;
 use Humanity\Repository\Account as AccountRepository;
@@ -16,7 +15,6 @@ use Humanity\Repository\Shift as ShiftRepository;
 use Humanity\Repository\Timeclock as TimeclockRepository;
 use Humanity\Storage\Adapter\AdapterInterface;
 use Humanity\Storage\Adapter\Session as Storage;
-use League\OAuth2\Client\Exception\IDPException;
 use League\OAuth2\Client\Token\AccessToken;
 
 /**
@@ -77,7 +75,7 @@ class Humanity {
 			$this->setApiBaseUri($options['apiBaseUri']);
 		}
 		
-		$this->client = new Client($this->getApiBaseUri());
+		$this->client = new Client(['base_uri' => $this->getApiBaseUri()]);
 	}
 
 	/**
@@ -159,7 +157,6 @@ class Humanity {
 	 * 
 	 * @return AccessToken
 	 * @throws \Exception
-	 * @throws IDPException
 	 */
 	public function obtainAccessToken() {
 		$tokenStorage = $this->getStorage();
@@ -207,15 +204,14 @@ class Humanity {
 		return $accessToken;
 	}
 
-	/**
-	 * @param string $method
-	 * @param string $path
-	 * @param mixed $binds
-	 * @param array $options
-	 *
-	 * @return RequestInterface
-	 */
-	protected function prepare($method, $path, $binds, array $options = []) {
+    /**
+     * @param string $method
+     * @param string $path
+     * @param mixed $binds
+     * @param array $options
+     */
+	protected function makeRequest($method, $path, $binds, array $options = []): Response
+    {
 		if (null !== $binds) {
 			if (is_scalar($binds)) {
 				$binds = ['id' => $binds];
@@ -235,11 +231,34 @@ class Humanity {
 		}
 
 		$options['query'] = array_merge($options['query'], [
-			'access_token' => $this->getAccessToken()->accessToken,
+			'access_token' => $this->getAccessToken()->getToken(),
 			'suppress_response_codes' => 1,
 		]);
 
-		return $this->client->createRequest($method, $path, null, null, $options);
+        try {
+            $httpResponse = $this->client->request($method, $path, $options);
+        }  catch (GuzzleException $exc) {
+            $response = new Response();
+            $response->setError([
+                'code' =>  $exc->getCode(),
+                'message' => $exc->getMessage(),
+            ]);
+
+            return $response;
+        }
+
+        $json = json_decode($httpResponse->getBody()->getContents(), true);
+
+        $response = new Response();
+        $response->setStatus($json['status']);
+
+        if (isset($json['data']['items'])) {
+            $response->setData($json['data']['items']);
+        } else {
+            $response->setData($json['data']);
+        }
+
+        return $response;
 	}
 
 	/**
@@ -252,29 +271,9 @@ class Humanity {
 	 * @return Response
 	 */
 	public function get($path, $binds = null, array $query = []) {
-		$httpRequest = $this->prepare('GET', $path, $binds, [
-			'query' => $query,
-		]);
-
-		try {
-			$httpResponse = $httpRequest->send();
-		}  catch (BadResponseException $exc) {
-			$httpResponse = $exc->getResponse();
-		}
-
-		$json = $httpResponse->json();
-
-		$response = new Response();
-		$response->setStatus($json['status']);
-		$response->setError($json['error']);
-
-		if (isset($json['data']['items'])) {
-			$response->setData($json['data']['items']);
-		} else {
-			$response->setData($json['data']);
-		}
-
-		return $response;
+        return $this->makeRequest('GET', $path, $binds, [
+            'query' => $query,
+        ]);
 	}
 
 	/**
@@ -287,29 +286,9 @@ class Humanity {
 	 * @return Response
 	 */
 	public function post($path, $binds = null, array $data = []) {
-		$httpRequest = $this->prepare('POST', $path, $binds, [
+		return $this->makeRequest('POST', $path, $binds, [
 			'body' => $data
 		]);
-
-		try {
-			$httpResponse = $httpRequest->send();
-		}  catch (BadResponseException $exc) {
-			$httpResponse = $exc->getResponse();
-		}
-
-		$json = $httpResponse->json();
-
-		$response = new Response();
-		$response->setStatus($json['status']);
-		$response->setError($json['error']);
-
-		if (isset($json['data']['items'])) {
-			$response->setData($json['data']['items']);
-		} else {
-			$response->setData($json['data']);
-		}
-
-		return $response;
 	}
 
 	/**
@@ -322,29 +301,9 @@ class Humanity {
 	 * @return Response
 	 */
 	public function put($path, $binds = null, array $data = []) {
-		$httpRequest = $this->prepare('PUT', $path, $binds, [
+		return $this->makeRequest('PUT', $path, $binds, [
 			'body' => $data
 		]);
-
-		try {
-			$httpResponse = $httpRequest->send();
-		}  catch (BadResponseException $exc) {
-			$httpResponse = $exc->getResponse();
-		}
-
-		$json = $httpResponse->json();
-
-		$response = new Response();
-		$response->setStatus($json['status']);
-		$response->setError($json['error']);
-
-		if (isset($json['data']['items'])) {
-			$response->setData($json['data']['items']);
-		} else {
-			$response->setData($json['data']);
-		}
-
-		return $response;
 	}
 
 	/**
@@ -356,27 +315,7 @@ class Humanity {
 	 * @return Response
 	 */
 	public function delete($path, $binds = null) {
-		$httpRequest = $this->prepare('DELETE', $path, $binds);
-
-		try {
-			$httpResponse = $httpRequest->send();
-		}  catch (BadResponseException $exc) {
-			$httpResponse = $exc->getResponse();
-		}
-
-		$json = $httpResponse->json();
-
-		$response = new Response();
-		$response->setStatus($json['status']);
-		$response->setError($json['error']);
-
-		if (isset($json['data']['items'])) {
-			$response->setData($json['data']['items']);
-		} else {
-			$response->setData($json['data']);
-		}
-
-		return $response;
+		return $this->makeRequest('DELETE', $path, $binds);
 	}
 
 	/**
